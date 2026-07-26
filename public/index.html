@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FeastFlow - Dynamic Food Delivery</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -12,11 +12,19 @@
   <!-- Navbar -->
   <header class="navbar">
     <div class="logo">🍔 FeastFlow</div>
-    <nav class="nav-links">
-      <a href="#menu-section" class="active">Menu</a>
-      <a href="#delivery-section">Delivery Options</a>
-      <a href="#about-section">Shop Info</a>
-    </nav>
+    
+    <!-- Location Picker -->
+    <div class="location-picker">
+      📍 Location: 
+      <select id="location-select" onchange="changeLocation(this.value)">
+        <option value="Kota">Kota, Rajasthan</option>
+        <option value="Jaipur">Jaipur, Rajasthan</option>
+        <option value="Delhi">Delhi NCR</option>
+        <option value="Bangalore">Bangalore, Karnataka</option>
+        <option value="Mumbai">Mumbai, Maharashtra</option>
+      </select>
+    </div>
+
     <div class="nav-actions">
       <button class="btn-secondary" onclick="openLoginModal()">Login</button>
       <div class="cart-badge" onclick="toggleCartModal()">
@@ -25,53 +33,68 @@
     </div>
   </header>
 
-  <!-- Hero Banner -->
+  <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <h1>Delicious Meals Delivered Fast to Your Door</h1>
-      <p>Explore full plates, rich main courses, and refreshing beverages freshly prepared daily.</p>
-      <a href="#menu-section" class="btn-primary">Shop / Order Now</a>
+      <h1>Top Brands & Famous Restaurants Delivered Fast</h1>
+      <p>Order from top chains and regional favorites in <span id="current-location-text">Kota</span>!</p>
+      <a href="#brands-section" class="btn-primary">Explore Restaurants</a>
     </div>
   </section>
 
-  <!-- Menu Section -->
-  <section id="menu-section" class="container">
-    <h2 class="section-title">Explore Our Menu</h2>
+  <!-- Filter Panel -->
+  <section class="container filter-panel">
+    <h2 class="section-title">Explore by Preference & Cuisine</h2>
     
-    <!-- Category Filter Tabs -->
-    <div class="category-tabs">
-      <button class="tab-btn active" onclick="filterMenu('all')">All Items</button>
-      <button class="tab-btn" onclick="filterMenu('main')">Main Course</button>
-      <button class="tab-btn" onclick="filterMenu('full-plate')">Full Plates</button>
-      <button class="tab-btn" onclick="filterMenu('beverage')">Beverages</button>
-    </div>
+    <div class="dropdown-filters">
+      <!-- Diet Filter -->
+      <div class="filter-group">
+        <label for="diet-filter">Diet Preference:</label>
+        <select id="diet-filter" onchange="applyFilters()">
+          <option value="all">All (Veg & Non-Veg)</option>
+          <option value="veg">🟢 Pure Veg</option>
+          <option value="non-veg">🔴 Non-Veg</option>
+        </select>
+      </div>
 
-    <!-- Dynamic Menu Grid -->
-    <div class="menu-grid" id="menu-container">
-      <!-- Menu items will be injected here dynamically -->
+      <!-- Category Filter -->
+      <div class="filter-group">
+        <label for="category-filter">Category:</label>
+        <select id="category-filter" onchange="applyFilters()">
+          <option value="all">All Categories</option>
+          <option value="dine-out">🍽️ Dine Out Specials</option>
+          <option value="main-course">🍛 Main Course</option>
+          <option value="full-plate">🍽️ Full Plates & Thalis</option>
+          <option value="sweets">🍩 Sweets & Desserts</option>
+          <option value="beverage">🥤 Beverages</option>
+        </select>
+      </div>
+
+      <!-- Cuisine Filter -->
+      <div class="filter-group">
+        <label for="cuisine-filter">Cuisine:</label>
+        <select id="cuisine-filter" onchange="applyFilters()">
+          <option value="all">All Cuisines</option>
+          <option value="North Indian">North Indian</option>
+          <option value="South Indian">South Indian</option>
+          <option value="Fast Food">Fast Food & Burgers</option>
+          <option value="Pizza">Pizza & Italian</option>
+          <option value="Chinese">Chinese & Asian</option>
+        </select>
+      </div>
     </div>
   </section>
 
-  <!-- Delivery Options Section -->
-  <section id="delivery-section" class="container bg-light">
-    <h2 class="section-title">Choose Delivery Option</h2>
-    <div class="delivery-grid">
-      <div class="delivery-card selected" onclick="selectDelivery(this, 'standard')">
-        <h3>🚀 Standard Delivery</h3>
-        <p>Estimated Time: 30 - 45 Mins</p>
-        <span class="price-tag">$2.99</span>
-      </div>
-      <div class="delivery-card" onclick="selectDelivery(this, 'express')">
-        <h3>⚡ Express Delivery</h3>
-        <p>Estimated Time: 15 - 20 Mins</p>
-        <span class="price-tag">$5.99</span>
-      </div>
-      <div class="delivery-card" onclick="selectDelivery(this, 'pickup')">
-        <h3>🏬 Restaurant Pickup</h3>
-        <p>Pick up directly at our counter</p>
-        <span class="price-tag">FREE</span>
-      </div>
-    </div>
+  <!-- Brands Section -->
+  <section id="brands-section" class="container">
+    <h2 class="section-title">Popular Restaurants in <span class="loc-highlight">Kota</span></h2>
+    <div class="brands-grid" id="brands-container"></div>
+  </section>
+
+  <!-- Food Menu Section -->
+  <section id="menu-section" class="container bg-light">
+    <h2 class="section-title">Popular Dishes</h2>
+    <div class="menu-grid" id="menu-container"></div>
   </section>
 
   <!-- Login Modal -->
@@ -81,8 +104,8 @@
       <h2>Welcome Back</h2>
       <form onsubmit="handleLogin(event)">
         <div class="input-group">
-          <label>Email Address</label>
-          <input type="email" placeholder="name@example.com" required>
+          <label>Email / Phone</label>
+          <input type="text" placeholder="Enter email or phone" required>
         </div>
         <div class="input-group">
           <label>Password</label>
@@ -97,17 +120,17 @@
   <div class="modal" id="cart-modal">
     <div class="modal-content">
       <span class="close-btn" onclick="toggleCartModal()">&times;</span>
-      <h2>Your Selected Items</h2>
+      <h2>Your Food Basket</h2>
       <div id="cart-items-list" class="cart-items">
         <p>Your cart is empty.</p>
       </div>
       <div class="cart-summary">
-        <h3>Total: $<span id="cart-total">0.00</span></h3>
-        <button class="btn-primary full-width" onclick="checkout()">Checkout Now</button>
+        <h3>Total: ₹<span id="cart-total">0.00</span></h3>
+        <button class="btn-primary full-width" onclick="checkout()">Place Order</button>
       </div>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="/script.js"></script>
 </body>
 </html>
