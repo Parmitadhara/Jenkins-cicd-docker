@@ -1,127 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BiteDash | Express Food Delivery</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FeastFlow - Dynamic Food Delivery</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <h1>🚀 BiteDash Express Food Delivery</h1>
-    <p>Containerized Dynamic Web Application</p>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">🍔 FeastFlow</div>
+    <nav class="nav-links">
+      <a href="#menu-section" class="active">Menu</a>
+      <a href="#delivery-section">Delivery Options</a>
+      <a href="#about-section">Shop Info</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn-secondary" onclick="openLoginModal()">Login</button>
+      <div class="cart-badge" onclick="toggleCartModal()">
+        🛒 Cart (<span id="cart-count">0</span>)
+      </div>
+    </div>
   </header>
 
-  <main class="container">
-    <!-- Food Menu Section -->
-    <section class="menu-section">
-      <h2>Menu</h2>
-      <div id="menu-grid" class="menu-grid">Loading menu items...</div>
-    </section>
+  <!-- Hero Banner -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Delicious Meals Delivered Fast to Your Door</h1>
+      <p>Explore full plates, rich main courses, and refreshing beverages freshly prepared daily.</p>
+      <a href="#menu-section" class="btn-primary">Shop / Order Now</a>
+    </div>
+  </section>
 
-    <!-- Cart & Order Summary Section -->
-    <section class="cart-section">
-      <h2>Your Order</h2>
-      <div id="cart-items">Cart is empty</div>
-      <hr />
-      <h3>Total: $<span id="total-price">0.00</span></h3>
-      <button id="checkout-btn" onclick="placeOrder()" disabled>Place Order</button>
-      <div id="order-status" class="status-msg"></div>
-    </section>
-  </main>
+  <!-- Menu Section -->
+  <section id="menu-section" class="container">
+    <h2 class="section-title">Explore Our Menu</h2>
+    
+    <!-- Category Filter Tabs -->
+    <div class="category-tabs">
+      <button class="tab-btn active" onclick="filterMenu('all')">All Items</button>
+      <button class="tab-btn" onclick="filterMenu('main')">Main Course</button>
+      <button class="tab-btn" onclick="filterMenu('full-plate')">Full Plates</button>
+      <button class="tab-btn" onclick="filterMenu('beverage')">Beverages</button>
+    </div>
 
-  <script>
-    let cart = [];
-    let menu = [];
+    <!-- Dynamic Menu Grid -->
+    <div class="menu-grid" id="menu-container">
+      <!-- Menu items will be injected here dynamically -->
+    </div>
+  </section>
 
-    // Fetch Menu dynamically from Express API
-    async function fetchMenu() {
-      try {
-        const response = await fetch('/api/menu');
-        const data = await response.json();
-        menu = data.menu;
-        renderMenu();
-      } catch (err) {
-        document.getElementById('menu-grid').innerText = 'Failed to load menu.';
-      }
-    }
+  <!-- Delivery Options Section -->
+  <section id="delivery-section" class="container bg-light">
+    <h2 class="section-title">Choose Delivery Option</h2>
+    <div class="delivery-grid">
+      <div class="delivery-card selected" onclick="selectDelivery(this, 'standard')">
+        <h3>🚀 Standard Delivery</h3>
+        <p>Estimated Time: 30 - 45 Mins</p>
+        <span class="price-tag">$2.99</span>
+      </div>
+      <div class="delivery-card" onclick="selectDelivery(this, 'express')">
+        <h3>⚡ Express Delivery</h3>
+        <p>Estimated Time: 15 - 20 Mins</p>
+        <span class="price-tag">$5.99</span>
+      </div>
+      <div class="delivery-card" onclick="selectDelivery(this, 'pickup')">
+        <h3>🏬 Restaurant Pickup</h3>
+        <p>Pick up directly at our counter</p>
+        <span class="price-tag">FREE</span>
+      </div>
+    </div>
+  </section>
 
-    function renderMenu() {
-      const grid = document.getElementById('menu-grid');
-      grid.innerHTML = menu.map(item => `
-        <div class="card">
-          <div class="emoji">${item.image}</div>
-          <h3>${item.name}</h3>
-          <p class="category">${item.category}</p>
-          <p class="price">$${item.price.toFixed(2)}</p>
-          <button onclick="addToCart(${item.id})">Add to Cart</button>
+  <!-- Login Modal -->
+  <div class="modal" id="login-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+      <h2>Welcome Back</h2>
+      <form onsubmit="handleLogin(event)">
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="name@example.com" required>
         </div>
-      `).join('');
-    }
-
-    function addToCart(itemId) {
-      const item = menu.find(i => i.id === itemId);
-      cart.push(item);
-      updateCart();
-    }
-
-    function updateCart() {
-      const cartDiv = document.getElementById('cart-items');
-      const totalSpan = document.getElementById('total-price');
-      const checkoutBtn = document.getElementById('checkout-btn');
-
-      if (cart.length === 0) {
-        cartDiv.innerText = 'Cart is empty';
-        totalSpan.innerText = '0.00';
-        checkoutBtn.disabled = true;
-        return;
-      }
-
-      cartDiv.innerHTML = cart.map(item => `
-        <div class="cart-item">
-          <span>${item.image} ${item.name}</span>
-          <span>$${item.price.toFixed(2)}</span>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••" required>
         </div>
-      `).join('');
+        <button type="submit" class="btn-primary full-width">Login</button>
+      </form>
+    </div>
+  </div>
 
-      const total = cart.reduce((sum, item) => sum + item.price, 0);
-      totalSpan.innerText = total.toFixed(2);
-      checkoutBtn.disabled = false;
-    }
+  <!-- Cart Modal -->
+  <div class="modal" id="cart-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="toggleCartModal()">&times;</span>
+      <h2>Your Selected Items</h2>
+      <div id="cart-items-list" class="cart-items">
+        <p>Your cart is empty.</p>
+      </div>
+      <div class="cart-summary">
+        <h3>Total: $<span id="cart-total">0.00</span></h3>
+        <button class="btn-primary full-width" onclick="checkout()">Checkout Now</button>
+      </div>
+    </div>
+  </div>
 
-    // Submit Order to Backend API
-    async function placeOrder() {
-      const statusDiv = document.getElementById('order-status');
-      const total = cart.reduce((sum, item) => sum + item.price, 0);
-
-      statusDiv.innerText = 'Processing order...';
-
-      try {
-        const response = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items: cart,
-            totalAmount: total,
-            customerName: 'DevOps Engineer'
-          })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          statusDiv.innerHTML = `<span style="color: green;">✅ ${result.message} ID: <strong>${result.order.orderId}</strong></span>`;
-          cart = [];
-          updateCart();
-        } else {
-          statusDiv.innerHTML = `<span style="color: red;">❌ ${result.message}</span>`;
-        }
-      } catch (err) {
-        statusDiv.innerHTML = '<span style="color: red;">❌ Error sending order to server.</span>';
-      }
-    }
-
-    fetchMenu();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
