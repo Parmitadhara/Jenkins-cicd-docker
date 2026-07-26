@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Replace with your Docker Hub registry path
         DOCKER_REGISTRY = 'docker.io'
-        DOCKER_IMAGE    = 'your-dockerhub-username/jenkins-cicd-app' // Docker image name
+        DOCKER_IMAGE    = 'parmitadhara/jenkins-cicd-app' // Docker image name
         DOCKER_CREDS    = 'docker-hub-credentials' // Jenkins Credential ID
     }
 
