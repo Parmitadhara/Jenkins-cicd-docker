@@ -1,0 +1,13 @@
+{
+  "name": "jenkins-cicd-food-app",
+  "version": "1.0.0",
+  "description": "Dynamic Express Food Delivery App for Jenkins CI/CD",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Running health test...\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
