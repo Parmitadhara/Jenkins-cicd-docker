@@ -38,17 +38,15 @@ pipeline {
             }
         }
 
-        stage('4. Push Image to Registry') {
+      stage('Push Image to Registry') {
             steps {
-                script {
-                    // Authenticate and push image tags
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", DOCKER_CREDS) {
-                        dockerImage.push("${BUILD_NUMBER}")
-                        dockerImage.push("latest")
+        // Replace 'docker-hub-credentials' with the exact Credential ID you saved in Jenkins
+                   withDockerRegistry([credentialsId: 'docker-hub-credentials', url: 'https://index.docker.io/v1/']) {
+                  sh "docker push parmitadhara/jenkins-cicd-app:${BUILD_NUMBER}"
                     }
-                }
-            }
-        }
+                 }
+               }
+        
 
         stage('5. Local Deployment') {
             steps {
