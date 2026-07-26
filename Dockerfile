@@ -1,10 +1,5 @@
 
 
-# Non-root user for basic container security
-USER node
-
-# Default command to run the applicat
-
 # Build Stage
 FROM node:18-alpine AS builder
 WORKDIR /app
