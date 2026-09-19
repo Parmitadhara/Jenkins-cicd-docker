@@ -11,50 +11,39 @@ For Developers & Engineers: Removes the tedious task of manually updating and co
 
 ##How It Works (In Simple Terms)
 
-[ Developer Writes Code ]
-           │
-           ▼
-[ GitHub: The Digital Notebook ] ── Saves every version of the project
-           │
-           ▼
-[ Jenkins: The Automation Robot ] ── Detects updates & runs checks
-           │
-           ▼
-[ Docker: The Standardized Box ] ── Packages app & ingredients together
-           │
-           ▼
-[ Docker Hub: The Warehouse ] ──── Stores ready-to-ship packages
-           │
-           ▼
-[ Live Server: The Restaurant ] ── Serves the app to users 24/7
-
-
-
-```mermaid
-flowchart TD
-    subgraph DevEnv["Local Environment"]
-        Dev["👤 Developer"] -- "git push origin main" --> GH["📁 GitHub Repository"]
-    end
-
-    subgraph CI["Jenkins Automation Server"]
-        direction TB
-        GH -- "Webhook / Poll" --> S1["Stage 1: Checkout\n(Pull Source Code)"]
-        S1 --> S2["Stage 2: Build Container\n(Tag: BUILD_NUMBER)"]
-        S2 --> S3["Stage 3: Run Tests\n(npm test in container)"]
-        S3 --> S4["Stage 4: Push to Registry\n(Authenticate & Upload)"]
-    end
-
-    subgraph Reg["Image Registry"]
-        S4 -- "docker push" --> DH["🐳 Docker Hub Registry"]
-    end
-
-    subgraph Prod["Remote Linux Server (Host)"]
-        DH -- "docker pull" --> DE["⚙️ Docker Engine"]
-        DE --> App["📦 FeastFlow Container\n(Port 3000)"]
-    end
-
-    App -- "HTTP Request / Response" --> User["🌐 Web Browser / Client"]
+```text
+┌────────────────────────────────┐
+│     Developer Writes Code      │
+└───────────────┬────────────────┘
+                │
+                ▼
+┌────────────────────────────────┐
+│  GitHub: The Digital Notebook  │ ── Saves every version of the project
+└───────────────┬────────────────┘
+                │
+                ▼
+┌────────────────────────────────┐
+│ Jenkins: The Automation Robot  │ ── Detects updates & runs checks
+└───────────────┬────────────────┘
+                │
+                ▼
+┌────────────────────────────────┐
+│  Docker: The StandardizedBox   │ ── Packages app & ingredients together
+└───────────────┬────────────────┘
+                │
+                ▼
+┌────────────────────────────────┐
+│   Docker Hub: The Warehouse    │ ── Stores ready-to-ship packages
+└───────────────┬────────────────┘
+                │
+                ▼
+┌────────────────────────────────┐
+│  Live Server: The Restaurant   │ ── Serves the app to users 24/7
+└────────────────────────────────┘
 ```
+
+
+
 ```text
 +-------------------------------------------------------------------+
 |                        1. Source Control                          |
