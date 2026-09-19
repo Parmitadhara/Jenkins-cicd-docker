@@ -30,66 +30,31 @@ For Developers & Engineers: Removes the tedious task of manually updating and co
 
 
 
-+---------------------+
-|      Developer      |
-|  (git push origin)  |
-+----------+----------+
-           |
-           v
-+---------------------+
-|  GitHub Repository  |
-|    (Source Code)    |
-+----------+----------+
-           |
-           | triggers build / poll
-           v
-+-------------------------------------------------------------------+
-|                          Jenkins Server                           |
-|                                                                   |
-|  +-------------------------------------------------------------+  |
-|  |                        Pipeline Stages                      |  |
-|  |                                                             |  |
-|  |  +------------------+         +--------------------------+  |  |
-|  |  | Stage 1: Checkout| ------> | Stage 2: Docker Build    |  |  |
-|  |  | (Pull repository)|         | (Tag: BUILD_NUMBER)      |  |  |
-|  |  +------------------+         +------------+-------------+  |  |
-|  |                                            |                |  |
-|  |                                            v                |  |
-|  |  +------------------+         +--------------------------+  |  |
-|  |  | Stage 4: Push    | <------ | Stage 3: Test Container  |  |  |
-|  |  | (To Docker Hub)  |         | (Health Check: npm test) |  |  |
-|  |  +--------+---------+         +--------------------------+  |  |
-|  +-----------|-------------------------------------------------+  |
-+--------------|----------------------------------------------------+
-               |
-               | docker push
-               v
-     +-------------------+
-     |    Docker Hub     |
-     | (Image Registry)  |
-     +---------+---------+
-               |
-               | docker pull
-               v
-+-------------------------------------------------------------------+
-|                        Remote Linux Server                        |
-|                                                                   |
-|  +-------------------------------------------------------------+  |
-|  |                        Docker Engine                        |  |
-|  |                                                             |  |
-|  |  +-------------------------------------------------------+  |  |
-|  |  |              FeastFlow Application Container          |  |  |
-|  |  |                     (Port 3000)                       |  |  |
-|  |  +---------------------------+---------------------------+  |  |
-|  +------------------------------|------------------------------+  |
-+---------------------------------|---------------------------------+
-                                  |
-                                  | HTTP (Port 80/3000)
-                                  v
-                        +--------------------+
-                        |  Browser / Client  |
-                        +--------------------+
+```mermaid
+flowchart TD
+    subgraph DevEnv["Local Environment"]
+        Dev["👤 Developer"] -- "git push origin main" --> GH["📁 GitHub Repository"]
+    end
 
+    subgraph CI["Jenkins Automation Server"]
+        direction TB
+        GH -- "Webhook / Poll" --> S1["Stage 1: Checkout\n(Pull Source Code)"]
+        S1 --> S2["Stage 2: Build Container\n(Tag: BUILD_NUMBER)"]
+        S2 --> S3["Stage 3: Run Tests\n(npm test in container)"]
+        S3 --> S4["Stage 4: Push to Registry\n(Authenticate & Upload)"]
+    end
+
+    subgraph Reg["Image Registry"]
+        S4 -- "docker push" --> DH["🐳 Docker Hub Registry"]
+    end
+
+    subgraph Prod["Remote Linux Server (Host)"]
+        DH -- "docker pull" --> DE["⚙️ Docker Engine"]
+        DE --> App["📦 FeastFlow Container\n(Port 3000)"]
+    end
+
+    App -- "HTTP Request / Response" --> User["🌐 Web Browser / Client"]
+```
 
 ##Sequence Flow:
 
