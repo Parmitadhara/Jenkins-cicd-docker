@@ -42,7 +42,7 @@ For Developers & Engineers: Removes the tedious task of manually updating and co
 └────────────────────────────────┘
 ```
 
-
+##The systematic architecture diagram representing the end-to-end CI/CD workflow:
 
 ```text
 +-------------------------------------------------------------------+
